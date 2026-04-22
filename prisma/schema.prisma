@@ -1,0 +1,199 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  DOCTOR
+  RECEPTIONIST
+  OPTICAL_STAFF
+  PATIENT
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum RestockStatus {
+  PENDING
+  ORDERED
+  RECEIVED
+  CLOSED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+}
+
+model User {
+  id           String          @id @default(cuid())
+  fullName     String
+  email        String          @unique
+  phone        String?
+  passwordHash String
+  role         UserRole
+  status       String          @default("ACTIVE")
+  createdAt    DateTime        @default(now())
+  doctorProfile DoctorProfile?
+  patientProfile PatientProfile?
+}
+
+model DoctorProfile {
+  id                String        @id @default(cuid())
+  userId            String        @unique
+  specialization    String
+  qualification     String?
+  experienceYears   Int?
+  bio               String?
+  consultationFee   Decimal?      @db.Decimal(10, 2)
+  isActive          Boolean       @default(true)
+  user              User          @relation(fields: [userId], references: [id])
+  appointments      Appointment[]
+  examinations      Examination[]
+  prescriptions     Prescription[]
+}
+
+model PatientProfile {
+  id              String          @id @default(cuid())
+  userId          String?         @unique
+  fullName        String
+  phone           String
+  email           String?
+  dateOfBirth     DateTime?
+  gender          String?
+  address         String?
+  createdAt       DateTime        @default(now())
+  user            User?           @relation(fields: [userId], references: [id])
+  appointments    Appointment[]
+  examinations    Examination[]
+  prescriptions   Prescription[]
+  invoices        Invoice[]
+  serviceOrders   ServiceOrder[]
+}
+
+model Appointment {
+  id               String             @id @default(cuid())
+  patientId        String
+  doctorId         String
+  appointmentDate  DateTime
+  timeSlot         String
+  status           AppointmentStatus  @default(PENDING)
+  appointmentType  String
+  bookingSource    String
+  createdAt        DateTime           @default(now())
+  patient          PatientProfile     @relation(fields: [patientId], references: [id])
+  doctor           DoctorProfile      @relation(fields: [doctorId], references: [id])
+}
+
+model Examination {
+  id                String          @id @default(cuid())
+  patientId         String
+  doctorId          String
+  leftEyePower      String?
+  rightEyePower     String?
+  diagnosis         String?
+  notes             String?
+  followUpAdvice    String?
+  createdAt         DateTime        @default(now())
+  patient           PatientProfile  @relation(fields: [patientId], references: [id])
+  doctor            DoctorProfile   @relation(fields: [doctorId], references: [id])
+  prescription      Prescription?
+}
+
+model Prescription {
+  id                    String          @id @default(cuid())
+  patientId             String
+  doctorId              String
+  examinationId         String          @unique
+  prescriptionNumber    String          @unique
+  status                String
+  issuedAt              DateTime        @default(now())
+  finalizedSnapshotJson Json
+  patient               PatientProfile  @relation(fields: [patientId], references: [id])
+  doctor                DoctorProfile   @relation(fields: [doctorId], references: [id])
+  examination           Examination     @relation(fields: [examinationId], references: [id])
+  items                 PrescriptionItem[]
+}
+
+model PrescriptionItem {
+  id              String        @id @default(cuid())
+  prescriptionId  String
+  itemType        String
+  itemName        String
+  dosage          String?
+  quantity        Int?
+  isAvailable     Boolean       @default(true)
+  prescription    Prescription  @relation(fields: [prescriptionId], references: [id])
+}
+
+model Product {
+  id                 String              @id @default(cuid())
+  category           String
+  name               String
+  sku                String              @unique
+  price              Decimal             @db.Decimal(10, 2)
+  stockQuantity      Int                 @default(0)
+  lowStockThreshold  Int                 @default(0)
+  isActive           Boolean             @default(true)
+  inventoryMovements InventoryMovement[]
+  restockRequests    RestockRequest[]
+}
+
+model InventoryMovement {
+  id          String    @id @default(cuid())
+  productId   String
+  quantity    Int
+  movementType String
+  reason      String?
+  createdAt   DateTime  @default(now())
+  product     Product   @relation(fields: [productId], references: [id])
+}
+
+model RestockRequest {
+  id                String         @id @default(cuid())
+  productId         String
+  requestedQuantity Int
+  reason            String?
+  status            RestockStatus  @default(PENDING)
+  requestCount      Int            @default(1)
+  lastRequestedAt   DateTime       @default(now())
+  product           Product        @relation(fields: [productId], references: [id])
+}
+
+model ServiceOrder {
+  id           String          @id @default(cuid())
+  patientId    String?
+  orderType    String
+  totalAmount  Decimal         @db.Decimal(10, 2)
+  status       String
+  createdAt    DateTime        @default(now())
+  patient      PatientProfile? @relation(fields: [patientId], references: [id])
+  invoice      Invoice?
+}
+
+model Invoice {
+  id                    String          @id @default(cuid())
+  patientId             String?
+  serviceOrderId        String?         @unique
+  invoiceNumber         String          @unique
+  totalAmount           Decimal         @db.Decimal(10, 2)
+  paymentStatus         PaymentStatus   @default(UNPAID)
+  finalizedSnapshotJson Json
+  createdAt             DateTime        @default(now())
+  patient               PatientProfile? @relation(fields: [patientId], references: [id])
+  serviceOrder          ServiceOrder?   @relation(fields: [serviceOrderId], references: [id])
+}
+

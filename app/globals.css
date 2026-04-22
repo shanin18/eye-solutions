@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 45 40% 96%;
+    --foreground: 168 38% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 168 38% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 168 38% 15%;
+    --primary: 175 77% 26%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 168 18% 92%;
+    --secondary-foreground: 168 38% 15%;
+    --muted: 160 14% 92%;
+    --muted-foreground: 165 12% 42%;
+    --accent: 44 93% 58%;
+    --accent-foreground: 168 38% 15%;
+    --destructive: 20 84% 42%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 160 12% 84%;
+    --input: 160 12% 84%;
+    --ring: 175 77% 26%;
+    --radius: 1rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply min-h-screen bg-background text-foreground antialiased;
+    background-image:
+      radial-gradient(circle at top left, rgba(245, 158, 11, 0.24), transparent 25%),
+      radial-gradient(circle at top right, rgba(15, 118, 110, 0.16), transparent 30%),
+      linear-gradient(180deg, #fcfaf4 0%, #f6f4ef 55%, #eef7f6 100%);
+  }
+}
+
+@layer components {
+  .shell {
+    @apply container;
+  }
+
+  .eyebrow {
+    @apply text-xs font-bold capitalize tracking-[0.18em] text-primary;
+  }
+
+  .page {
+    @apply pt-10;
+  }
+
+  .page-header {
+    @apply mb-6 space-y-3;
+  }
+
+  .page-header h1 {
+    @apply max-w-4xl text-4xl font-black leading-none tracking-tight md:text-6xl;
+  }
+
+  .page-header p {
+    @apply max-w-3xl text-base leading-7 text-muted-foreground;
+  }
+
+  .hero {
+    @apply grid gap-6 py-12 lg:grid-cols-[1.3fr_0.9fr];
+  }
+
+  .hero-card,
+  .section-card,
+  .metric-card,
+  .form-card,
+  .info-panel {
+    @apply rounded-[28px] border bg-white/75 shadow-soft backdrop-blur;
+  }
+
+  .hero-card {
+    @apply bg-hero-radial p-8;
+  }
+
+  .hero-card h1 {
+    @apply mt-3 max-w-xl text-4xl font-black leading-none tracking-tight md:text-7xl;
+  }
+
+  .hero-card p,
+  .section-card p,
+  .list-block p {
+    @apply text-base leading-7 text-muted-foreground;
+  }
+
+  .metric-card,
+  .section-card,
+  .form-card,
+  .info-panel {
+    @apply p-6;
+  }
+
+  .metric-card strong {
+    @apply mt-3 block text-4xl font-black;
+  }
+
+  .button-row {
+    @apply mt-6 flex flex-wrap gap-3;
+  }
+
+  .button {
+    @apply inline-flex h-11 items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90;
+  }
+
+  .button-secondary {
+    @apply inline-flex h-11 items-center justify-center rounded-full border border-primary/15 bg-white/70 px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-white;
+  }
+
+  .stack {
+    @apply grid gap-4;
+  }
+
+  .app-grid {
+    @apply grid gap-4;
+  }
+
+  .app-grid.two {
+    @apply md:grid-cols-2;
+  }
+
+  .app-grid.three {
+    @apply lg:grid-cols-3;
+  }
+
+  .list-block {
+    @apply grid gap-3;
+  }
+
+  .list-row {
+    @apply flex items-start justify-between gap-4 border-t border-border pt-3.5;
+  }
+
+  .pill {
+    @apply inline-flex w-fit items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary;
+  }
+
+  .pill.warn {
+    @apply bg-amber-100 text-amber-700;
+  }
+
+  .pill.danger {
+    @apply bg-orange-100 text-orange-700;
+  }
+
+  .subtle {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .field-grid {
+    @apply grid gap-4 md:grid-cols-2;
+  }
+
+  .field {
+    @apply grid gap-2;
+  }
+
+  .field label {
+    @apply text-sm font-semibold;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    @apply flex w-full rounded-2xl border bg-white px-4 py-3 text-sm outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring;
+  }
+
+  .timeline {
+    @apply grid gap-3;
+  }
+
+  .timeline-step {
+    @apply border-l-2 border-primary/20 pl-4;
+  }
+}
