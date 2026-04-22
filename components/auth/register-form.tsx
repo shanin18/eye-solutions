@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { type FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -43,7 +44,7 @@ export function RegisterForm() {
     }
 
     startNavigation();
-    router.push("/patient/dashboard");
+    router.push("/patient/dashboard" as Route);
     router.refresh();
   }
 

@@ -1,6 +1,11 @@
+import type { Route } from "next";
+
 import { AppLink } from "@/components/navigation/navigation-progress";
 import { SectionCard } from "@/components/ui/section-card";
 import { dashboardSummaries, doctors, inventoryHighlights, patientTimeline, products, services } from "@/lib/mock-data";
+
+const bookingRoute: Route = "/book-appointment";
+const patientRoute: Route = "/patient/dashboard";
 
 export default function HomePage() {
   return (
@@ -13,10 +18,10 @@ export default function HomePage() {
             This first build milestone turns the product brief into a real app structure. It covers the patient-facing areas, and role dashboards with data models that point directly to the MVP scope.
           </p>
           <div className="button-row">
-            <AppLink className="button" href="/book-appointment">
+            <AppLink className="button" href={bookingRoute}>
               Book an appointment
             </AppLink>
-            <AppLink className="button-secondary" href="/patient/dashboard">
+            <AppLink className="button-secondary" href={patientRoute}>
               Open patient portal
             </AppLink>
           </div>

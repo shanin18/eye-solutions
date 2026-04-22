@@ -1,8 +1,10 @@
+import type { Route } from "next";
+
 import { BrandMark } from "@/components/nav/brand-mark";
 import { AppLink } from "@/components/navigation/navigation-progress";
 import { cn } from "@/lib/utils";
 
-const publicLinks = [
+const publicLinks: Array<{ href: Route; label: string }> = [
   { href: "/", label: "Home" },
   { href: "/doctors", label: "Doctors" },
   { href: "/services", label: "Services" },

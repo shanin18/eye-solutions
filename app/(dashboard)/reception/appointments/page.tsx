@@ -7,11 +7,10 @@ export default function ReceptionAppointmentsPage() {
   return (
     <main className="shell page">
       <div className="page-header">
-        <span className="eyebrow">Reception appointments</span>
-        <h1>Appointments now come from a shared route-backed demo store instead of hardcoded page-only data.</h1>
+        <span className="eyebrow">Reception queue</span>
+        <h1>Reception can review the full queue before routing patients into doctors and billing.</h1>
         <p>
-          This is the bridge between static UI and real persistence. It keeps the flow easy to understand before we swap
-          the in-memory store for PostgreSQL and Prisma.
+          The same appointments here are the ones used by booking, reception, doctor workflow, and patient history.
         </p>
       </div>
 

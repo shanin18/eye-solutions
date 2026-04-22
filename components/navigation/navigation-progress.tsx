@@ -1,8 +1,8 @@
 "use client";
 
-import Link, { type LinkProps } from "next/link";
-import { createContext, type MouseEvent, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { createContext, type ComponentProps, type MouseEvent, type ReactNode, useContext, useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 
 type NavigationProgressContextValue = {
   startNavigation: () => void;
@@ -12,7 +12,6 @@ const NavigationProgressContext = createContext<NavigationProgressContextValue |
 
 export function NavigationProgressProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,7 +24,7 @@ export function NavigationProgressProvider({ children }: { children: ReactNode }
     }, 450);
 
     return () => window.clearTimeout(timeout);
-  }, [pathname, searchParams, loading]);
+  }, [pathname, loading]);
 
   useEffect(() => {
     if (!loading) {
@@ -51,7 +50,7 @@ export function NavigationProgressProvider({ children }: { children: ReactNode }
       {children}
       {loading ? (
         <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-background/45 backdrop-blur-[2px]">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
         </div>
       ) : null}
     </NavigationProgressContext.Provider>
@@ -68,7 +67,7 @@ export function useNavigationProgress() {
   return context;
 }
 
-type AppLinkProps = LinkProps & {
+type AppLinkProps = ComponentProps<typeof Link> & {
   children: ReactNode;
   className?: string;
   prefetch?: boolean | null;

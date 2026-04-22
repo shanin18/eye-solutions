@@ -4,9 +4,13 @@ import { createPrescription, listAppointments, listPrescriptions } from "@/lib/d
 
 type CreatePrescriptionPayload = {
   appointmentId?: string;
+  leftEyeVision?: string;
+  rightEyeVision?: string;
   diagnosis?: string;
+  clinicalNotes?: string;
   lensPower?: string;
   medicines?: string;
+  recommendations?: string;
   advice?: string;
 };
 
@@ -26,9 +30,13 @@ export async function POST(request: Request) {
   const fieldErrors: Record<string, string> = {};
 
   if (!body.appointmentId?.trim()) fieldErrors.appointmentId = "Appointment selection is required.";
+  if (!body.leftEyeVision?.trim()) fieldErrors.leftEyeVision = "Left eye vision is required.";
+  if (!body.rightEyeVision?.trim()) fieldErrors.rightEyeVision = "Right eye vision is required.";
   if (!body.diagnosis?.trim()) fieldErrors.diagnosis = "Diagnosis is required.";
+  if (!body.clinicalNotes?.trim()) fieldErrors.clinicalNotes = "Clinical notes are required.";
   if (!body.lensPower?.trim()) fieldErrors.lensPower = "Lens power is required.";
   if (!body.medicines?.trim()) fieldErrors.medicines = "Medicines are required.";
+  if (!body.recommendations?.trim()) fieldErrors.recommendations = "Recommendations are required.";
   if (!body.advice?.trim()) fieldErrors.advice = "Advice is required.";
 
   if (Object.keys(fieldErrors).length > 0) {
@@ -48,9 +56,13 @@ export async function POST(request: Request) {
     patientName: appointment.patientName,
     doctorId: appointment.doctorId,
     doctorName: appointment.doctorName,
+    leftEyeVision: body.leftEyeVision!,
+    rightEyeVision: body.rightEyeVision!,
     diagnosis: body.diagnosis!,
+    clinicalNotes: body.clinicalNotes!,
     lensPower: body.lensPower!,
     medicines: body.medicines!,
+    recommendations: body.recommendations!,
     advice: body.advice!
   });
 

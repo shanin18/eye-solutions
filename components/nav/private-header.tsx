@@ -1,9 +1,14 @@
+import type { Route } from "next";
+
 import { BrandMark } from "@/components/nav/brand-mark";
 import { LogoutButton } from "@/components/nav/logout-button";
 import { AppLink } from "@/components/navigation/navigation-progress";
 import { getSessionUser } from "@/lib/auth/session";
 
-const roleLinks = {
+const roleLinks: Record<
+  "SUPER_ADMIN" | "ADMIN" | "DOCTOR" | "RECEPTIONIST" | "OPTICAL_STAFF" | "PATIENT",
+  Array<{ href: Route; label: string }>
+> = {
   SUPER_ADMIN: [
     { href: "/admin", label: "Admin" },
     { href: "/doctor", label: "Doctor" },
@@ -27,7 +32,7 @@ const roleLinks = {
     { href: "/patient/appointments", label: "Appointments" },
     { href: "/patient/prescriptions", label: "Prescriptions" }
   ]
-} as const;
+};
 
 export async function PrivateHeader() {
   const user = await getSessionUser();
@@ -60,4 +65,3 @@ export async function PrivateHeader() {
     </header>
   );
 }
-

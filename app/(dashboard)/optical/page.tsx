@@ -1,49 +1,23 @@
-import { SectionCard } from "@/components/ui/section-card";
-import { listProducts } from "@/lib/data/demo-store";
+import { OpticalWorkspace } from "@/components/optical/optical-workspace";
+import { listInvoices, listProducts, listServiceOrders } from "@/lib/data/demo-store";
 
 export default function OpticalDashboardPage() {
   const products = listProducts();
+  const orders = listServiceOrders();
+  const invoices = listInvoices();
 
   return (
     <main className="shell page">
       <div className="page-header">
-        <span className="eyebrow">Optical shop dashboard</span>
-        <h1>Optical staff can work from the same live inventory used by admin operations.</h1>
+        <span className="eyebrow">Optical shop / POS</span>
+        <h1>Optical staff can recommend products, create direct service orders, and track fulfillment and payments.</h1>
         <p>
-          Product additions and stock edits made by admin appear here immediately, so the optical team is working with
-          current availability.
+          This follows the direct optical service flow: customer arrives, staff creates the service ticket or retail
+          order, inventory is checked, billing is generated, and fulfillment status is tracked.
         </p>
       </div>
 
-      <div className="app-grid two">
-        <SectionCard title="Fast-moving items" eyebrow="Retail stock">
-          <div className="list-block">
-            {products.map((product) => (
-              <div className="list-row" key={product.id}>
-                <div>
-                  <strong>{product.name}</strong>
-                  <p>{product.description}</p>
-                </div>
-                <span className="pill">Stock {product.stock}</span>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-
-        <SectionCard title="Direct service flow" eyebrow="No appointment required">
-          <div className="timeline">
-            <div className="timeline-step">
-              <strong>Create service ticket or retail order</strong>
-            </div>
-            <div className="timeline-step">
-              <strong>Check inventory in real time</strong>
-            </div>
-            <div className="timeline-step">
-              <strong>Generate invoice and mark fulfillment status</strong>
-            </div>
-          </div>
-        </SectionCard>
-      </div>
+      <OpticalWorkspace invoices={invoices} orders={orders} products={products} />
     </main>
   );
 }

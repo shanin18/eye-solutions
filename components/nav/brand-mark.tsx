@@ -1,8 +1,12 @@
+import type { Route } from "next";
+
 import { AppLink } from "@/components/navigation/navigation-progress";
+
+const homeRoute: Route = "/";
 
 export function BrandMark() {
   return (
-    <AppLink className="flex items-center text-center gap-3" href="/">
+    <AppLink className="flex items-center text-center gap-3" href={homeRoute}>
       <svg
         className="h-12 w-12"
         width="512"

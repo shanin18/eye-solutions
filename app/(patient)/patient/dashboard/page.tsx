@@ -36,9 +36,14 @@ export default async function PatientDashboardPage() {
       </div>
 
       <div className="mt-4">
-        <PatientHistory appointments={overview.appointments} prescriptions={overview.prescriptions} />
+        <PatientHistory
+          appointments={overview.appointments}
+          examinations={overview.examinations}
+          invoices={overview.invoices}
+          prescriptions={overview.prescriptions}
+          serviceOrders={overview.serviceOrders}
+        />
       </div>
     </main>
   );
 }
-

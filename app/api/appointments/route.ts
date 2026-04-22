@@ -6,7 +6,7 @@ import {
   findOrCreatePatient,
   getAvailableDatesForDoctor,
   getAvailableTimeSlots,
-  isSlotAvailable,
+  // isSlotAvailable,
   listAppointments
 } from "@/lib/data/demo-store";
 
@@ -67,13 +67,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please fix the highlighted fields.", fieldErrors }, { status: 400 });
   }
 
-  const doctor = doctors.find((item) => item.id === body.doctorId);
+  const fullName: string = body.fullName as string;
+  const phone: string = body.phone as string;
+  const doctorId: string = body.doctorId as string;
+  const serviceType: string = body.serviceType as string;
+  const appointmentDate: string = body.appointmentDate as string;
+  const timeSlot: string = body.timeSlot as string;
+  const email = body.email?.trim() || undefined;
+
+  const doctor = doctors.find((item) => item.id === doctorId.trim());
 
   if (!doctor) {
     return NextResponse.json({ error: "Selected doctor was not found." }, { status: 404 });
   }
 
-  if (!isSlotAvailable(doctor.id, body.appointmentDate, body.timeSlot)) {
+  if (!isSlotAvailable(doctor?.id, appointmentDate.trim(), timeSlot.trim())) {
     return NextResponse.json(
       { error: "That date and time slot is already booked. Please choose another available slot." },
       { status: 409 }
@@ -81,9 +89,9 @@ export async function POST(request: Request) {
   }
 
   const patient = findOrCreatePatient({
-    fullName: body.fullName,
-    phone: body.phone,
-    email: body.email,
+    fullName: fullName.trim(),
+    phone: phone.trim(),
+    email,
     source: body.bookingSource ?? "ONLINE"
   });
 
@@ -94,9 +102,9 @@ export async function POST(request: Request) {
     patientEmail: patient.email,
     doctorId: doctor.id,
     doctorName: doctor.name,
-    serviceType: body.serviceType,
-    appointmentDate: body.appointmentDate,
-    timeSlot: body.timeSlot,
+    serviceType: serviceType.trim(),
+    appointmentDate: appointmentDate.trim(),
+    timeSlot: timeSlot.trim(),
     status: body.bookingSource === "WALK_IN" ? "CHECKED_IN" : "CONFIRMED",
     bookingSource: body.bookingSource ?? "ONLINE",
     reason: body.reason

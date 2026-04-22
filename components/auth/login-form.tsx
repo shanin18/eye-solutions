@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { type FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -15,7 +16,7 @@ type SessionResponse = {
   };
 };
 
-const roleRedirectMap: Record<NonNullable<SessionResponse["user"]>["role"], string> = {
+const roleRedirectMap: Record<NonNullable<SessionResponse["user"]>["role"], Route> = {
   SUPER_ADMIN: "/admin",
   ADMIN: "/admin",
   DOCTOR: "/doctor",

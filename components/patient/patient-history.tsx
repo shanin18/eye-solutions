@@ -1,11 +1,14 @@
-import type { DemoAppointment, DemoPrescription } from "@/lib/data/demo-store";
+import type { DemoAppointment, DemoExamination, DemoInvoice, DemoPrescription, DemoServiceOrder } from "@/lib/data/demo-store";
 
 type PatientHistoryProps = {
   appointments: DemoAppointment[];
+  examinations: DemoExamination[];
   prescriptions: DemoPrescription[];
+  serviceOrders: DemoServiceOrder[];
+  invoices: DemoInvoice[];
 };
 
-export function PatientHistory({ appointments, prescriptions }: PatientHistoryProps) {
+export function PatientHistory({ appointments, examinations, prescriptions, serviceOrders, invoices }: PatientHistoryProps) {
   return (
     <div className="app-grid two">
       <section className="section-card">
@@ -28,6 +31,23 @@ export function PatientHistory({ appointments, prescriptions }: PatientHistoryPr
       </section>
 
       <section className="section-card">
+        <span className="eyebrow">Examinations</span>
+        <h3 className="mt-2">Recorded eye examination details</h3>
+        <div className="mt-4 list-block">
+          {examinations.map((exam) => (
+            <div className="list-row" key={exam.id}>
+              <div>
+                <strong>{exam.diagnosis}</strong>
+                <p>Left: {exam.leftEyeVision} | Right: {exam.rightEyeVision}</p>
+                <p>{exam.notes}</p>
+              </div>
+              <span className="pill">Saved</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-card">
         <span className="eyebrow">Prescription history</span>
         <h3 className="mt-2">Previous prescriptions</h3>
         <div className="mt-4 list-block">
@@ -43,7 +63,38 @@ export function PatientHistory({ appointments, prescriptions }: PatientHistoryPr
           ))}
         </div>
       </section>
+
+      <section className="section-card">
+        <span className="eyebrow">Optical orders</span>
+        <h3 className="mt-2">Service and product order status</h3>
+        <div className="mt-4 list-block">
+          {serviceOrders.map((order) => (
+            <div className="list-row" key={order.id}>
+              <div>
+                <strong>{order.source}</strong>
+                <p>{order.items.join(", ")}</p>
+              </div>
+              <span className="pill">{order.status}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="section-card">
+        <span className="eyebrow">Invoices</span>
+        <h3 className="mt-2">Billing and payment progress</h3>
+        <div className="mt-4 list-block">
+          {invoices.map((invoice) => (
+            <div className="list-row" key={invoice.id}>
+              <div>
+                <strong>{invoice.referenceType}</strong>
+                <p>Amount: {invoice.totalAmount}</p>
+              </div>
+              <span className="pill">{invoice.paymentStatus}</span>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
-

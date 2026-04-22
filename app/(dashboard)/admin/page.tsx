@@ -1,43 +1,58 @@
 import { AdminWorkspace } from "@/components/admin/admin-workspace";
-import { listAppointments, listProducts } from "@/lib/data/demo-store";
+import { getOperationalReport, getSystemSettings, listAppointments, listBranches, listInvoices, listProducts, listRestockRequests, listUsers } from "@/lib/data/demo-store";
+import { getSessionUser } from "@/lib/auth/session";
 
-export default function AdminDashboardPage() {
+export default async function AdminDashboardPage() {
+  const user = await getSessionUser();
   const appointments = listAppointments();
   const products = listProducts();
-  const lowStockCount = products.filter((item) => item.status !== "IN_STOCK").length;
-  const completedVisits = appointments.filter((item) => item.status === "COMPLETED").length;
+  const restocks = listRestockRequests();
+  const branches = listBranches();
+  const users = listUsers();
+  const settings = getSystemSettings();
+  const invoices = listInvoices();
+  const report = getOperationalReport();
+  const role = user?.role === "SUPER_ADMIN" ? "SUPER_ADMIN" : "ADMIN";
 
   return (
     <main className="shell page">
       <div className="page-header">
-        <span className="eyebrow">Admin dashboard</span>
-        <h1>Owners and managers can review bookings, inventory, and operational changes live.</h1>
+        <span className="eyebrow">{role === "SUPER_ADMIN" ? "Business owner workspace" : "Branch manager workspace"}</span>
+        <h1>Operations, inventory, restocks, and reporting are now connected around the actual clinic flow.</h1>
         <p>
-          This dashboard is now data-driven. New bookings, product edits, and status changes all flow through the same
-          shared live store.
+          This dashboard follows the business-owner and branch-manager responsibilities from your flow: manage branches,
+          users, settings, stock, restocks, and daily operational visibility.
         </p>
       </div>
 
       <div className="app-grid three">
         <div className="metric-card">
-          <span className="eyebrow">Total bookings</span>
-          <strong>{appointments.length}</strong>
-          <p>All public, staff, and walk-in bookings appear here.</p>
+          <span className="eyebrow">Daily appointments</span>
+          <strong>{report.totalAppointments}</strong>
+          <p>Online bookings, reception bookings, and walk-ins flow into the same appointment lifecycle.</p>
         </div>
         <div className="metric-card">
-          <span className="eyebrow">Completed visits</span>
-          <strong>{completedVisits}</strong>
-          <p>Visits completed by doctors and carried into patient history.</p>
+          <span className="eyebrow">Tracked revenue</span>
+          <strong>{settings.defaultCurrency} {report.totalRevenue}</strong>
+          <p>Invoices and paid or partial payments roll into the running operations report.</p>
         </div>
         <div className="metric-card">
-          <span className="eyebrow">Low stock items</span>
-          <strong>{lowStockCount}</strong>
-          <p>Products that need attention before they affect service delivery.</p>
+          <span className="eyebrow">Restock queue</span>
+          <strong>{restocks.length}</strong>
+          <p>Low-stock and unavailable medicines or products automatically surface here.</p>
         </div>
       </div>
 
-      <AdminWorkspace initialAppointments={appointments} initialProducts={products} />
+      <AdminWorkspace
+        branches={branches}
+        initialAppointments={appointments}
+        initialProducts={products}
+        invoices={invoices}
+        restockRequests={restocks}
+        role={role}
+        settings={settings}
+        users={users}
+      />
     </main>
   );
 }
-
