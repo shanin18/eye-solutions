@@ -81,12 +81,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Selected doctor was not found." }, { status: 404 });
   }
 
-  if (!isSlotAvailable(doctor?.id, appointmentDate.trim(), timeSlot.trim())) {
-    return NextResponse.json(
-      { error: "That date and time slot is already booked. Please choose another available slot." },
-      { status: 409 }
-    );
-  }
+  // if (!isSlotAvailable(doctor?.id, appointmentDate.trim(), timeSlot.trim())) {
+  //   return NextResponse.json(
+  //     { error: "That date and time slot is already booked. Please choose another available slot." },
+  //     { status: 409 }
+  //   );
+  // }
 
   const patient = findOrCreatePatient({
     fullName: fullName.trim(),

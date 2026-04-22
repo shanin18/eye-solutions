@@ -573,9 +573,9 @@ export function getAvailableTimeSlots(doctorId: string, appointmentDate: string)
   return APPOINTMENT_TIME_SLOTS.filter((slot) => !reserved.has(slot));
 }
 
-export function isSlotAvailable(doctorId: string, appointmentDate: string, timeSlot: string) {
-  return getAvailableTimeSlots(doctorId, appointmentDate).includes(timeSlot as (typeof APPOINTMENT_TIME_SLOTS)[number]);
-}
+// export function isSlotAvailable(doctorId: string, appointmentDate: string, timeSlot: string) {
+//   return getAvailableTimeSlots(doctorId, appointmentDate).includes(timeSlot as (typeof APPOINTMENT_TIME_SLOTS)[number]);
+// }
 
 export function createAppointment(input: Omit<DemoAppointment, "id" | "createdAt">) {
   const store = getStore();
