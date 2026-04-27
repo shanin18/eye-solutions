@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { createProduct, listProducts } from "@/lib/data/demo-store";
+import { requireApiUser } from "@/lib/auth/guards";
+import { createProduct, listProducts } from "@/lib/data/data-service";
 
 type CreateProductPayload = {
   name?: string;
@@ -14,10 +15,22 @@ type CreateProductPayload = {
 };
 
 export async function GET() {
-  return NextResponse.json({ products: listProducts() });
+  const user = await requireApiUser(["SUPER_ADMIN", "ADMIN", "OPTICAL_STAFF", "DOCTOR"]);
+
+  if (user instanceof NextResponse) {
+    return user;
+  }
+
+  return NextResponse.json({ products: await listProducts() });
 }
 
 export async function POST(request: Request) {
+  const user = await requireApiUser(["SUPER_ADMIN", "ADMIN"]);
+
+  if (user instanceof NextResponse) {
+    return user;
+  }
+
   const body = (await request.json()) as CreateProductPayload;
   const fieldErrors: Record<string, string> = {};
 
@@ -33,7 +46,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please fix the highlighted fields.", fieldErrors }, { status: 400 });
   }
 
-  const product = createProduct({
+  const product = await createProduct({
     name: body.name!,
     category: body.category!,
     sku: body.sku!,
@@ -46,4 +59,3 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ product }, { status: 201 });
 }
-

@@ -1,10 +1,10 @@
 import { OpticalWorkspace } from "@/components/optical/optical-workspace";
-import { listInvoices, listProducts, listServiceOrders } from "@/lib/data/demo-store";
+import { requireSessionUser } from "@/lib/auth/session";
+import { listInvoices, listProducts, listServiceOrders } from "@/lib/data/data-service";
 
-export default function OpticalDashboardPage() {
-  const products = listProducts();
-  const orders = listServiceOrders();
-  const invoices = listInvoices();
+export default async function OpticalDashboardPage() {
+  await requireSessionUser(["OPTICAL_STAFF", "ADMIN", "SUPER_ADMIN"]);
+  const [products, orders, invoices] = await Promise.all([listProducts(), listServiceOrders(), listInvoices()]);
 
   return (
     <main className="shell page">

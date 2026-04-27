@@ -1,17 +1,19 @@
 import { AdminWorkspace } from "@/components/admin/admin-workspace";
-import { getOperationalReport, getSystemSettings, listAppointments, listBranches, listInvoices, listProducts, listRestockRequests, listUsers } from "@/lib/data/demo-store";
-import { getSessionUser } from "@/lib/auth/session";
+import { requireSessionUser } from "@/lib/auth/session";
+import { getOperationalReport, getSystemSettings, listAppointments, listBranches, listInvoices, listProducts, listRestockRequests, listUsers } from "@/lib/data/data-service";
 
 export default async function AdminDashboardPage() {
-  const user = await getSessionUser();
-  const appointments = listAppointments();
-  const products = listProducts();
-  const restocks = listRestockRequests();
-  const branches = listBranches();
-  const users = listUsers();
-  const settings = getSystemSettings();
-  const invoices = listInvoices();
-  const report = getOperationalReport();
+  const user = await requireSessionUser(["SUPER_ADMIN", "ADMIN"]);
+  const [appointments, products, restocks, branches, users, settings, invoices, report] = await Promise.all([
+    listAppointments(),
+    listProducts(),
+    listRestockRequests(),
+    listBranches(),
+    listUsers(),
+    getSystemSettings(),
+    listInvoices(),
+    getOperationalReport()
+  ]);
   const role = user?.role === "SUPER_ADMIN" ? "SUPER_ADMIN" : "ADMIN";
 
   return (

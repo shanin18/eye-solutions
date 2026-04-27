@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { createInvoice, createServiceOrder, getPatientByEmail, listServiceOrders } from "@/lib/data/demo-store";
+import { requireApiUser } from "@/lib/auth/guards";
+import { createInvoice, createServiceOrder, getPatientByEmail, listServiceOrders } from "@/lib/data/data-service";
 
 type CreateOrderPayload = {
   patientEmail?: string;
@@ -11,15 +12,27 @@ type CreateOrderPayload = {
 };
 
 export async function GET(request: Request) {
+  const user = await requireApiUser(["SUPER_ADMIN", "ADMIN", "OPTICAL_STAFF", "PATIENT"]);
+
+  if (user instanceof NextResponse) {
+    return user;
+  }
+
   const { searchParams } = new URL(request.url);
-  const patientEmail = searchParams.get("patientEmail");
+  const patientEmail = user.role === "PATIENT" ? user.email : searchParams.get("patientEmail");
 
   return NextResponse.json({
-    orders: listServiceOrders(undefined, patientEmail)
+    orders: await listServiceOrders(undefined, patientEmail)
   });
 }
 
 export async function POST(request: Request) {
+  const user = await requireApiUser(["SUPER_ADMIN", "ADMIN", "OPTICAL_STAFF"]);
+
+  if (user instanceof NextResponse) {
+    return user;
+  }
+
   const body = (await request.json()) as CreateOrderPayload;
   const fieldErrors: Record<string, string> = {};
 
@@ -32,8 +45,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please fix the highlighted fields.", fieldErrors }, { status: 400 });
   }
 
-  const patient = getPatientByEmail(body.patientEmail);
-  const order = createServiceOrder({
+  const patient = await getPatientByEmail(body.patientEmail);
+  const order = await createServiceOrder({
     patientId: patient?.id,
     patientName: body.patientName!,
     source: body.source!,
@@ -41,13 +54,13 @@ export async function POST(request: Request) {
     totalAmount: body.totalAmount!
   });
 
-  const invoice = createInvoice({
+  const invoice = await createInvoice({
     referenceType: "SERVICE_ORDER",
     referenceId: order.id,
+    patientId: patient?.id,
     patientName: order.patientName,
     totalAmount: order.totalAmount
   });
 
   return NextResponse.json({ order, invoice }, { status: 201 });
 }
-

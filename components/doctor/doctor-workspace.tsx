@@ -5,7 +5,7 @@ import { type FormEvent, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { DemoAppointment, DemoPrescription, DemoProduct, DemoRestockRequest } from "@/lib/data/demo-store";
+import type { DemoAppointment, DemoPrescription, DemoProduct, DemoRestockRequest } from "@/lib/data/data-service";
 
 type DoctorWorkspaceProps = {
   queue: DemoAppointment[];
@@ -242,4 +242,3 @@ export function DoctorWorkspace({ queue, prescriptions, products, restockRequest
     </div>
   );
 }
-

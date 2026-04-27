@@ -1,7 +1,9 @@
 import { SectionCard } from "@/components/ui/section-card";
-import { services } from "@/lib/mock-data";
+import { listServices } from "@/lib/data/data-service";
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await listServices();
+
   return (
     <main className="shell page">
       <div className="page-header">

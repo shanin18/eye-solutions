@@ -5,7 +5,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { doctors, serviceTypes } from "@/lib/mock-data";
+import type { Doctor } from "@/lib/types";
 
 type AppointmentResponse = {
   error?: string;
@@ -34,7 +34,12 @@ const initialState = {
   reason: ""
 };
 
-export function AppointmentRequestForm() {
+type AppointmentRequestFormProps = {
+  doctors: Doctor[];
+  serviceTypes: string[];
+};
+
+export function AppointmentRequestForm({ doctors, serviceTypes }: AppointmentRequestFormProps) {
   const [form, setForm] = useState(initialState);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
   const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);

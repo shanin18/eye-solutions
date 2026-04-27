@@ -1,10 +1,10 @@
 import { SectionCard } from "@/components/ui/section-card";
-import { getSessionUser } from "@/lib/auth/session";
-import { getPatientOverview } from "@/lib/data/demo-store";
+import { requireSessionUser } from "@/lib/auth/session";
+import { getPatientOverview } from "@/lib/data/data-service";
 
 export default async function PatientAppointmentsPage() {
-  const user = await getSessionUser();
-  const overview = getPatientOverview(user?.email);
+  const user = await requireSessionUser(["PATIENT"]);
+  const overview = await getPatientOverview(user.email);
 
   return (
     <main className="shell page">
@@ -27,4 +27,3 @@ export default async function PatientAppointmentsPage() {
     </main>
   );
 }
-

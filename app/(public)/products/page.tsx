@@ -1,7 +1,9 @@
 import { SectionCard } from "@/components/ui/section-card";
-import { products } from "@/lib/mock-data";
+import { listProducts } from "@/lib/data/data-service";
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const products = await listProducts();
+
   return (
     <main className="shell page">
       <div className="page-header">
@@ -18,7 +20,7 @@ export default function ProductsPage() {
           <SectionCard key={product.id} title={product.name} eyebrow={product.category}>
             <p>{product.description}</p>
             <div className="list-row">
-              <span className="subtle">{product.priceLabel}</span>
+              <span className="subtle">${product.price}</span>
               <span className={`pill ${product.stock <= 3 ? "warn" : ""}`}>Stock {product.stock}</span>
             </div>
           </SectionCard>

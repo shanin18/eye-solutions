@@ -1,12 +1,19 @@
 import { NextResponse } from "next/server";
 
-import { updateServiceOrderStatus, type ServiceOrderStatus } from "@/lib/data/demo-store";
+import { requireApiUser } from "@/lib/auth/guards";
+import { updateServiceOrderStatus, type ServiceOrderStatus } from "@/lib/data/data-service";
 
 type UpdateOrderPayload = {
   status?: ServiceOrderStatus;
 };
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+  const user = await requireApiUser(["SUPER_ADMIN", "ADMIN", "OPTICAL_STAFF"]);
+
+  if (user instanceof NextResponse) {
+    return user;
+  }
+
   const { id } = await context.params;
   const body = (await request.json()) as UpdateOrderPayload;
 
@@ -14,7 +21,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     return NextResponse.json({ error: "Order status is required." }, { status: 400 });
   }
 
-  const order = updateServiceOrderStatus(id, body.status);
+  const order = await updateServiceOrderStatus(id, body.status);
 
   if (!order) {
     return NextResponse.json({ error: "Order not found." }, { status: 404 });
@@ -22,4 +29,3 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
   return NextResponse.json({ order });
 }
-

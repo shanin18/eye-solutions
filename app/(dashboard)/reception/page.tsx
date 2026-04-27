@@ -1,10 +1,10 @@
 import { ReceptionWorkspace } from "@/components/reception/reception-workspace";
-import { doctors } from "@/lib/mock-data";
-import { listAppointments, listInvoices } from "@/lib/data/demo-store";
+import { requireSessionUser } from "@/lib/auth/session";
+import { listAppointments, listDoctors, listInvoices } from "@/lib/data/data-service";
 
-export default function ReceptionDashboardPage() {
-  const appointments = listAppointments();
-  const invoices = listInvoices();
+export default async function ReceptionDashboardPage() {
+  await requireSessionUser(["RECEPTIONIST", "ADMIN", "SUPER_ADMIN"]);
+  const [appointments, invoices, doctors] = await Promise.all([listAppointments(), listInvoices(), listDoctors()]);
 
   return (
     <main className="shell page">

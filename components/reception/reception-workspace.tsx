@@ -4,7 +4,7 @@ import { type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { AppointmentStatus, DemoAppointment, DemoInvoice } from "@/lib/data/demo-store";
+import type { AppointmentStatus, DemoAppointment, DemoInvoice } from "@/lib/data/data-service";
 
 type ReceptionWorkspaceProps = {
   appointments: DemoAppointment[];

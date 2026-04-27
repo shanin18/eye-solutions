@@ -1,7 +1,9 @@
 import { SectionCard } from "@/components/ui/section-card";
-import { doctors } from "@/lib/mock-data";
+import { listDoctors } from "@/lib/data/data-service";
 
-export default function DoctorsPage() {
+export default async function DoctorsPage() {
+  const doctors = await listDoctors();
+
   return (
     <main className="shell page">
       <div className="page-header">

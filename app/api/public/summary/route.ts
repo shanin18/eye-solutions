@@ -1,13 +1,19 @@
 import { NextResponse } from "next/server";
 
-import { dashboardSummaries, doctors, products, services } from "@/lib/mock-data";
+import { getPublicDashboardSummaries, listDoctors, listProducts, listServices } from "@/lib/data/data-service";
 
 export async function GET() {
+  const [summaries, doctors, services, products] = await Promise.all([
+    getPublicDashboardSummaries(),
+    listDoctors(),
+    listServices(),
+    listProducts()
+  ]);
+
   return NextResponse.json({
-    summaries: dashboardSummaries,
+    summaries,
     doctors,
     services,
     products
   });
 }
-

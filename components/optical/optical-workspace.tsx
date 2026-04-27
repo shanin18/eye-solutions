@@ -4,7 +4,7 @@ import { type FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { DemoInvoice, DemoProduct, DemoServiceOrder, InvoicePaymentStatus, ServiceOrderStatus } from "@/lib/data/demo-store";
+import type { DemoInvoice, DemoProduct, DemoServiceOrder, InvoicePaymentStatus, ServiceOrderStatus } from "@/lib/data/data-service";
 
 type OpticalWorkspaceProps = {
   products: DemoProduct[];

@@ -15,7 +15,7 @@ import type {
   DemoSystemSettings,
   DemoUserAccount,
   RestockStatus
-} from "@/lib/data/demo-store";
+} from "@/lib/data/data-service";
 
 type AdminWorkspaceProps = {
   role: "SUPER_ADMIN" | "ADMIN";
@@ -317,4 +317,3 @@ export function AdminWorkspace({
     </div>
   );
 }
-

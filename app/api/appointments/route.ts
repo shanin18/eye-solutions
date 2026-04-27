@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 
-import { doctors } from "@/lib/mock-data";
+import { Prisma } from "@prisma/client";
+
+import { requireApiUser } from "@/lib/auth/guards";
 import {
   createAppointment,
   findOrCreatePatient,
   getAvailableDatesForDoctor,
   getAvailableTimeSlots,
-  listAppointments
-} from "@/lib/data/demo-store";
+  listAppointments,
+  listDoctors
+} from "@/lib/data/data-service";
 
 type CreateAppointmentPayload = {
   fullName?: string;
@@ -30,19 +33,25 @@ export async function GET(request: Request) {
     return NextResponse.json({
       doctorId,
       appointmentDate,
-      availableTimeSlots: getAvailableTimeSlots(doctorId, appointmentDate)
+      availableTimeSlots: await getAvailableTimeSlots(doctorId, appointmentDate)
     });
   }
 
   if (doctorId) {
     return NextResponse.json({
       doctorId,
-      availableDates: getAvailableDatesForDoctor(doctorId)
+      availableDates: await getAvailableDatesForDoctor(doctorId)
     });
   }
 
+  const user = await requireApiUser(["SUPER_ADMIN", "ADMIN", "RECEPTIONIST", "DOCTOR"]);
+
+  if (user instanceof NextResponse) {
+    return user;
+  }
+
   return NextResponse.json({
-    appointments: listAppointments({
+    appointments: await listAppointments({
       patientEmail: searchParams.get("patientEmail") ?? undefined,
       doctorId,
       status: searchParams.get("status") ?? undefined
@@ -74,33 +83,48 @@ export async function POST(request: Request) {
   const timeSlot: string = body.timeSlot as string;
   const email = body.email?.trim() || undefined;
 
+  const doctors = await listDoctors();
   const doctor = doctors.find((item) => item.id === doctorId.trim());
 
   if (!doctor) {
     return NextResponse.json({ error: "Selected doctor was not found." }, { status: 404 });
   }
 
-  const patient = findOrCreatePatient({
+  const availableTimeSlots = await getAvailableTimeSlots(doctor.id, appointmentDate.trim());
+
+  if (!availableTimeSlots.includes(timeSlot.trim() as (typeof availableTimeSlots)[number])) {
+    return NextResponse.json({ error: "Selected time slot is no longer available." }, { status: 409 });
+  }
+
+  const patient = await findOrCreatePatient({
     fullName: fullName.trim(),
     phone: phone.trim(),
     email,
     source: body.bookingSource ?? "ONLINE"
   });
 
-  const appointment = createAppointment({
-    patientId: patient.id,
-    patientName: patient.fullName,
-    patientPhone: patient.phone,
-    patientEmail: patient.email,
-    doctorId: doctor.id,
-    doctorName: doctor.name,
-    serviceType: serviceType.trim(),
-    appointmentDate: appointmentDate.trim(),
-    timeSlot: timeSlot.trim(),
-    status: body.bookingSource === "WALK_IN" ? "CHECKED_IN" : "CONFIRMED",
-    bookingSource: body.bookingSource ?? "ONLINE",
-    reason: body.reason
-  });
+  try {
+    const appointment = await createAppointment({
+      patientId: patient.id,
+      patientName: patient.fullName,
+      patientPhone: patient.phone,
+      patientEmail: patient.email,
+      doctorId: doctor.id,
+      doctorName: doctor.name,
+      serviceType: serviceType.trim(),
+      appointmentDate: appointmentDate.trim(),
+      timeSlot: timeSlot.trim(),
+      status: body.bookingSource === "WALK_IN" ? "CHECKED_IN" : "CONFIRMED",
+      bookingSource: body.bookingSource ?? "ONLINE",
+      reason: body.reason
+    });
 
-  return NextResponse.json({ appointment }, { status: 201 });
+    return NextResponse.json({ appointment }, { status: 201 });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return NextResponse.json({ error: "Selected time slot is no longer available." }, { status: 409 });
+    }
+
+    throw error;
+  }
 }

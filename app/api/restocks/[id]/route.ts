@@ -1,12 +1,19 @@
 import { NextResponse } from "next/server";
 
-import { updateRestockStatus, type RestockStatus } from "@/lib/data/demo-store";
+import { requireApiUser } from "@/lib/auth/guards";
+import { updateRestockStatus, type RestockStatus } from "@/lib/data/data-service";
 
 type UpdateRestockPayload = {
   status?: RestockStatus;
 };
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+  const user = await requireApiUser(["SUPER_ADMIN", "ADMIN"]);
+
+  if (user instanceof NextResponse) {
+    return user;
+  }
+
   const { id } = await context.params;
   const body = (await request.json()) as UpdateRestockPayload;
 
@@ -14,7 +21,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     return NextResponse.json({ error: "Restock status is required." }, { status: 400 });
   }
 
-  const restock = updateRestockStatus(id, body.status);
+  const restock = await updateRestockStatus(id, body.status);
 
   if (!restock) {
     return NextResponse.json({ error: "Restock request not found." }, { status: 404 });
@@ -22,4 +29,3 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
   return NextResponse.json({ restock });
 }
-

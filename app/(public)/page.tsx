@@ -2,12 +2,43 @@ import type { Route } from "next";
 
 import { AppLink } from "@/components/navigation/navigation-progress";
 import { SectionCard } from "@/components/ui/section-card";
-import { dashboardSummaries, doctors, inventoryHighlights, patientTimeline, products, services } from "@/lib/mock-data";
+import { getPublicDashboardSummaries, listDoctors, listProducts, listServices } from "@/lib/data/data-service";
+
+const patientTimeline = [
+  {
+    title: "Book or register",
+    description: "Patients can self-book or arrive as walk-ins while still entering the same downstream workflow."
+  },
+  {
+    title: "Check in and examine",
+    description: "Reception confirms arrival, then the doctor records findings, diagnosis, and care notes."
+  },
+  {
+    title: "Prescribe and fulfill",
+    description: "Stock-aware prescription logic keeps available items flowing and unavailable items visible to restock."
+  },
+  {
+    title: "Review later",
+    description: "Patients return to the portal to see appointments, prescriptions, invoices, and service history."
+  }
+] as const;
 
 const bookingRoute: Route = "/book-appointment";
 const patientRoute: Route = "/patient/dashboard";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [dashboardSummaries, doctors, products, services] = await Promise.all([
+    getPublicDashboardSummaries(),
+    listDoctors(),
+    listProducts(),
+    listServices()
+  ]);
+  const inventoryHighlights = products.slice(0, 3).map((product) => ({
+    name: product.name,
+    sku: product.sku,
+    status: product.status === "OUT_OF_STOCK" ? "Out of Stock" : product.status === "LOW_STOCK" ? "Low Stock" : "In Stock"
+  }));
+
   return (
     <main className="shell">
       <section className="hero">

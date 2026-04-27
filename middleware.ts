@@ -2,23 +2,20 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import { SESSION_COOKIE, type AppRole } from "@/lib/auth/constants";
+import { readSessionToken } from "@/lib/auth/token";
 import { canAccessPath } from "@/lib/rbac";
 
-function readRole(request: NextRequest): AppRole | null {
+async function readRole(request: NextRequest): Promise<AppRole | null> {
   const raw = request.cookies.get(SESSION_COOKIE)?.value;
   if (!raw) {
     return null;
   }
 
-  try {
-    const session = JSON.parse(atob(raw)) as { role?: AppRole };
-    return session.role ?? null;
-  } catch {
-    return null;
-  }
+  const session = await readSessionToken(raw);
+  return session?.role ?? null;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isProtected = ["/patient", "/admin", "/doctor", "/reception", "/optical"].some((prefix) =>
     pathname.startsWith(prefix)
@@ -28,7 +25,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const role = readRole(request);
+  const role = await readRole(request);
 
   if (!role) {
     return NextResponse.redirect(new URL("/login", request.url));

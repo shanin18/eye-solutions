@@ -1,14 +1,18 @@
 import { DoctorWorkspace } from "@/components/doctor/doctor-workspace";
-import { getSessionUser } from "@/lib/auth/session";
-import { listAppointments, listPrescriptions, listProducts, listRestockRequests } from "@/lib/data/demo-store";
+import { requireSessionUser } from "@/lib/auth/session";
+import { listAppointments, listDoctors, listPrescriptions, listProducts, listRestockRequests } from "@/lib/data/data-service";
 
 export default async function DoctorDashboardPage() {
-  const user = await getSessionUser();
-  const doctorId = user?.email === "doctor@eyeoptics.local" ? "doc-1" : undefined;
-  const queue = listAppointments({ doctorId }).filter((item) => item.status === "CONFIRMED" || item.status === "CHECKED_IN");
-  const prescriptions = listPrescriptions({ doctorId });
-  const products = listProducts();
-  const restockRequests = listRestockRequests();
+  const user = await requireSessionUser(["DOCTOR"]);
+  const doctors = await listDoctors();
+  const doctorId = doctors.find((doctor) => doctor.name === user.fullName)?.id;
+  const [appointments, prescriptions, products, restockRequests] = await Promise.all([
+    listAppointments({ doctorId }),
+    listPrescriptions({ doctorId }),
+    listProducts(),
+    listRestockRequests()
+  ]);
+  const queue = appointments.filter((item) => item.status === "CONFIRMED" || item.status === "CHECKED_IN");
 
   return (
     <main className="shell page">

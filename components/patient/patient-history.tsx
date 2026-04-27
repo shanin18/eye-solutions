@@ -1,4 +1,4 @@
-import type { DemoAppointment, DemoExamination, DemoInvoice, DemoPrescription, DemoServiceOrder } from "@/lib/data/demo-store";
+import type { DemoAppointment, DemoExamination, DemoInvoice, DemoPrescription, DemoServiceOrder } from "@/lib/data/data-service";
 
 type PatientHistoryProps = {
   appointments: DemoAppointment[];

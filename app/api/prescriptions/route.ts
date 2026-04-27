@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { createPrescription, listAppointments, listPrescriptions } from "@/lib/data/demo-store";
+import { requireApiUser } from "@/lib/auth/guards";
+import { createPrescription, listAppointments, listPrescriptions } from "@/lib/data/data-service";
 
 type CreatePrescriptionPayload = {
   appointmentId?: string;
@@ -15,17 +16,31 @@ type CreatePrescriptionPayload = {
 };
 
 export async function GET(request: Request) {
+  const user = await requireApiUser(["SUPER_ADMIN", "ADMIN", "DOCTOR", "PATIENT"]);
+
+  if (user instanceof NextResponse) {
+    return user;
+  }
+
   const { searchParams } = new URL(request.url);
+  const patientEmail = user.role === "PATIENT" ? user.email : searchParams.get("patientEmail") ?? undefined;
+  const doctorId = user.role === "DOCTOR" ? undefined : searchParams.get("doctorId") ?? undefined;
 
   return NextResponse.json({
-    prescriptions: listPrescriptions({
-      patientEmail: searchParams.get("patientEmail") ?? undefined,
-      doctorId: searchParams.get("doctorId") ?? undefined
+    prescriptions: await listPrescriptions({
+      patientEmail,
+      doctorId
     })
   });
 }
 
 export async function POST(request: Request) {
+  const user = await requireApiUser(["DOCTOR"]);
+
+  if (user instanceof NextResponse) {
+    return user;
+  }
+
   const body = (await request.json()) as CreatePrescriptionPayload;
   const fieldErrors: Record<string, string> = {};
 
@@ -43,13 +58,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please fix the highlighted fields.", fieldErrors }, { status: 400 });
   }
 
-  const appointment = listAppointments({ appointmentId: body.appointmentId })[0];
+  const appointment = (await listAppointments({ appointmentId: body.appointmentId }))[0];
 
   if (!appointment) {
     return NextResponse.json({ error: "Selected appointment was not found." }, { status: 404 });
   }
 
-  const prescription = createPrescription({
+  const prescription = await createPrescription({
     appointmentId: appointment.id,
     patientId: appointment.patientId,
     patientEmail: appointment.patientEmail,

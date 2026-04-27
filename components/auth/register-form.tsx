@@ -17,6 +17,7 @@ export function RegisterForm() {
   const router = useRouter();
   const { startNavigation } = useNavigationProgress();
   const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -32,7 +33,7 @@ export function RegisterForm() {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ fullName, email, password })
+      body: JSON.stringify({ fullName, phone, email, password })
     });
 
     const data = (await response.json()) as RegisterResponse;
@@ -58,7 +59,7 @@ export function RegisterForm() {
         </div>
         <div className="field">
           <label htmlFor="phone">Phone</label>
-          <Input id="phone" placeholder="+880..." />
+          <Input id="phone" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="+880..." />
         </div>
         <div className="field">
           <label htmlFor="reg-email">Email</label>

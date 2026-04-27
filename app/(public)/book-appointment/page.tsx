@@ -1,6 +1,9 @@
 import { AppointmentRequestForm } from "@/components/booking/appointment-request-form";
+import { listDoctors, listServices } from "@/lib/data/data-service";
 
-export default function BookAppointmentPage() {
+export default async function BookAppointmentPage() {
+  const [doctors, services] = await Promise.all([listDoctors(), listServices()]);
+
   return (
     <main className="shell page">
       <div className="page-header">
@@ -12,7 +15,7 @@ export default function BookAppointmentPage() {
         </p>
       </div>
 
-      <AppointmentRequestForm />
+      <AppointmentRequestForm doctors={doctors} serviceTypes={services.map((service) => service.name)} />
     </main>
   );
 }

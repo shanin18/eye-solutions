@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 
+import { verifyPassword } from "@/lib/auth/password";
 import { createSessionCookie } from "@/lib/auth/session";
-import { findDemoUser } from "@/lib/auth/mock-users";
+import { prisma } from "@/lib/db/prisma";
 
 type LoginPayload = {
   email?: string;
@@ -15,9 +16,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
   }
 
-  const user = findDemoUser(body.email, body.password);
+  const user = await prisma.user.findUnique({
+    where: { email: body.email.trim().toLowerCase() },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+      role: true,
+      passwordHash: true,
+      status: true
+    }
+  });
 
-  if (!user) {
+  if (!user || user.status !== "ACTIVE" || !verifyPassword(body.password, user.passwordHash)) {
     return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
   }
 
@@ -38,4 +49,3 @@ export async function POST(request: Request) {
     }
   });
 }
-

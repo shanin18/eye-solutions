@@ -1,8 +1,10 @@
 import { SectionCard } from "@/components/ui/section-card";
-import { listAppointments } from "@/lib/data/demo-store";
+import { requireSessionUser } from "@/lib/auth/session";
+import { listAppointments } from "@/lib/data/data-service";
 
-export default function ReceptionAppointmentsPage() {
-  const appointments = listAppointments();
+export default async function ReceptionAppointmentsPage() {
+  await requireSessionUser(["RECEPTIONIST", "ADMIN", "SUPER_ADMIN"]);
+  const appointments = await listAppointments();
 
   return (
     <main className="shell page">

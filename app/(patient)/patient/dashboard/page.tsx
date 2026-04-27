@@ -1,10 +1,10 @@
 import { PatientHistory } from "@/components/patient/patient-history";
-import { getSessionUser } from "@/lib/auth/session";
-import { getPatientOverview } from "@/lib/data/demo-store";
+import { requireSessionUser } from "@/lib/auth/session";
+import { getPatientOverview } from "@/lib/data/data-service";
 
 export default async function PatientDashboardPage() {
-  const user = await getSessionUser();
-  const overview = getPatientOverview(user?.email);
+  const user = await requireSessionUser(["PATIENT"]);
+  const overview = await getPatientOverview(user.email);
 
   return (
     <main className="shell page">
