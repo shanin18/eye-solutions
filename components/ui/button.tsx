@@ -7,7 +7,7 @@ const baseStyles =
 
 const variantStyles = {
   default: "bg-primary text-primary-foreground hover:bg-primary/90",
-  secondary: "border border-primary/15 bg-white/70 text-primary hover:bg-white"
+  secondary: "border border-primary/10 bg-white/70 text-primary hover:bg-white"
 } as const;
 
 const sizeStyles = {
@@ -30,4 +30,3 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, va
 Button.displayName = "Button";
 
 export { Button };
-

@@ -39,7 +39,7 @@ export async function PrivateHeader() {
   const links = user ? roleLinks[user.role] : [];
 
   return (
-    <header className="sticky top-0 z-20 border-b border-border/70 bg-background/85 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-border/70 bg-background/80 backdrop-blur">
       <div className="shell flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between">
         <BrandMark />
 

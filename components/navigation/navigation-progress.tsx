@@ -49,7 +49,7 @@ export function NavigationProgressProvider({ children }: { children: ReactNode }
     <NavigationProgressContext.Provider value={value}>
       {children}
       {loading ? (
-        <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-background/45 backdrop-blur-[2px]">
+        <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-[2px]">
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary/20 border-t-primary" />
         </div>
       ) : null}

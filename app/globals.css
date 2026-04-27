@@ -72,6 +72,10 @@
     @apply grid gap-6 py-12 lg:grid-cols-[1.3fr_0.9fr];
   }
 
+  .hero-enhanced {
+    @apply items-stretch gap-8 pt-12;
+  }
+
   .hero-card,
   .section-card,
   .metric-card,
@@ -82,6 +86,10 @@
 
   .hero-card {
     @apply bg-hero-radial p-8;
+  }
+
+  .hero-story {
+    @apply relative overflow-hidden border-primary/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.86),rgba(255,248,232,0.92))];
   }
 
   .hero-card h1 {
@@ -101,6 +109,10 @@
     @apply p-6;
   }
 
+  .metric-card-highlight {
+    @apply border-primary/10 bg-white/80;
+  }
+
   .metric-card strong {
     @apply mt-3 block text-4xl font-black;
   }
@@ -114,7 +126,7 @@
   }
 
   .button-secondary {
-    @apply inline-flex h-11 items-center justify-center rounded-full border border-primary/15 bg-white/70 px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-white;
+    @apply inline-flex h-11 items-center justify-center rounded-full border border-primary/10 bg-white/70 px-5 py-2.5 text-sm font-semibold text-primary transition hover:bg-white;
   }
 
   .stack {
@@ -181,5 +193,144 @@
 
   .timeline-step {
     @apply border-l-2 border-primary/20 pl-4;
+  }
+
+  .hero-badges {
+    @apply mt-5 flex flex-wrap gap-2 text-sm text-foreground/90;
+  }
+
+  .hero-badges span {
+    @apply inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/70 px-4 py-2;
+  }
+
+  .hero-inline-proof {
+    @apply mt-8 grid gap-4 border-t border-primary/10 pt-6 sm:grid-cols-3;
+  }
+
+  .hero-inline-proof div {
+    @apply grid gap-1;
+  }
+
+  .hero-inline-proof strong {
+    @apply text-3xl font-black text-primary;
+  }
+
+  .hero-inline-proof span {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .hero-visual {
+    @apply relative grid gap-4;
+  }
+
+  .hero-visual-panel {
+    @apply relative rounded-[28px] border bg-white/80 p-6 shadow-soft backdrop-blur;
+  }
+
+  .hero-visual-panel-primary {
+    @apply border-primary/10 bg-[linear-gradient(160deg,rgba(232,248,246,0.96),rgba(255,255,255,0.82))];
+  }
+
+  .hero-journey-grid {
+    @apply mt-5 grid gap-3;
+  }
+
+  .journey-chip {
+    @apply flex items-start gap-3 rounded-3xl border border-primary/10 bg-white/70 p-4;
+  }
+
+  .journey-chip strong {
+    @apply block text-sm font-semibold text-foreground;
+  }
+
+  .journey-chip p {
+    @apply mt-1 text-sm leading-6 text-muted-foreground;
+  }
+
+  .hero-orb {
+    @apply pointer-events-none absolute rounded-full blur-3xl;
+  }
+
+  .hero-orb-one {
+    @apply right-0 top-8 h-40 w-40 bg-primary/10;
+  }
+
+  .hero-orb-two {
+    @apply bottom-8 left-6 h-28 w-28 bg-accent/20;
+  }
+
+  .feature-ribbon {
+    @apply grid gap-4 lg:grid-cols-3;
+  }
+
+  .feature-ribbon-card,
+  .spotlight-card,
+  .cta-card,
+  .immersive-banner,
+  .mobile-nav-panel {
+    @apply rounded-[28px] border bg-white/80 shadow-soft backdrop-blur;
+  }
+
+  .feature-ribbon-card {
+    @apply grid gap-4 p-6;
+  }
+
+  .feature-ribbon-card h3 {
+    @apply text-xl font-black leading-snug;
+  }
+
+  .spotlight-card {
+    @apply grid gap-4 p-6;
+  }
+
+  .spotlight-card h3 {
+    @apply text-2xl font-black;
+  }
+
+  .spotlight-meta {
+    @apply flex flex-wrap gap-3 text-sm text-muted-foreground;
+  }
+
+  .spotlight-icon-wrap {
+    @apply inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10;
+  }
+
+  .cta-card {
+    @apply bg-[linear-gradient(160deg,rgba(15,118,110,0.9),rgba(10,95,90,0.92))] p-6 text-primary-foreground;
+  }
+
+  .cta-card .eyebrow,
+  .cta-card p {
+    @apply text-primary-foreground/80;
+  }
+
+  .cta-card h3 {
+    @apply text-2xl font-black leading-snug;
+  }
+
+  .immersive-banner {
+    @apply flex flex-col gap-6 border-primary/10 bg-[linear-gradient(120deg,rgba(255,255,255,0.72),rgba(232,248,246,0.88))] p-8 lg:flex-row lg:items-center lg:justify-between;
+  }
+
+  .immersive-banner h2 {
+    @apply mt-2 max-w-3xl text-3xl font-black leading-tight md:text-4xl;
+  }
+
+  .footer-grid {
+    @apply grid gap-8 md:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_1fr];
+  }
+
+  .mobile-nav-panel {
+    @apply grid gap-2 border-primary/10 bg-white/90 p-4;
+  }
+
+  @media (max-width: 768px) {
+    .hero-card h1 {
+      @apply text-5xl;
+    }
+
+    .page-header h1 {
+      @apply text-3xl;
+    }
   }
 }
