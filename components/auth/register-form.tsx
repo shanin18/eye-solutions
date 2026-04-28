@@ -1,31 +1,32 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type RegisterResponse = {
   message?: string;
   error?: string;
-  devVerificationUrl?: string;
+  email?: string;
+  expiresAt?: string;
+  devOtp?: string;
 };
 
 export function RegisterForm() {
+  const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
-  const [devVerificationUrl, setDevVerificationUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
     setError("");
-    setMessage("");
-    setDevVerificationUrl("");
 
     try {
       const response = await fetch("/api/auth/register", {
@@ -44,10 +45,20 @@ export function RegisterForm() {
         return;
       }
 
-      setMessage(data.message ?? "Account created. Check your email to verify it.");
-      setDevVerificationUrl(data.devVerificationUrl ?? "");
-      setPassword("");
-      setIsSubmitting(false);
+      const verificationEmail = data.email ?? email;
+      const params = new URLSearchParams({
+        email: verificationEmail
+      });
+
+      if (data.expiresAt) {
+        params.set("expiresAt", data.expiresAt);
+      }
+
+      if (data.devOtp) {
+        sessionStorage.setItem(`verification-otp:${verificationEmail}`, data.devOtp);
+      }
+
+      router.push(`/verify-email?${params.toString()}`);
     } catch {
       setError("Unable to register right now. Please try again.");
       setIsSubmitting(false);
@@ -83,15 +94,6 @@ export function RegisterForm() {
       </div>
 
       {error ? <p className="mt-4 text-sm font-medium text-orange-700">{error}</p> : null}
-      {message ? <p className="mt-4 text-sm font-medium text-primary">{message}</p> : null}
-      {devVerificationUrl ? (
-        <p className="mt-2 text-sm text-muted-foreground">
-          SMTP is not configured yet, so your local verification link is available here:{" "}
-          <a className="text-primary underline" href={devVerificationUrl}>
-            verify this account
-          </a>
-        </p>
-      ) : null}
 
       <div className="button-row">
         <Button disabled={isSubmitting} type="submit">

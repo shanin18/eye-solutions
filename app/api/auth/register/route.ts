@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { createEmailVerificationToken } from "@/lib/auth/email-verification";
+import { createEmailVerificationOtp } from "@/lib/auth/email-verification";
 import { hashPassword } from "@/lib/auth/password";
 import { prisma } from "@/lib/db/prisma";
 import { sendVerificationEmail } from "@/lib/email/mailer";
@@ -44,16 +44,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "An account with this email already exists." }, { status: 409 });
     }
 
-    const token = await createEmailVerificationToken(existingUser.id, existingUser.email);
+    const verification = await createEmailVerificationOtp(existingUser.id, existingUser.email);
     const delivery = await sendVerificationEmail({
       email: existingUser.email,
       fullName: existingUser.fullName,
-      token
+      otp: verification.otp
     });
 
     return NextResponse.json({
-      message: "This account already exists but is not verified yet. We sent a fresh verification link.",
-      devVerificationUrl: delivery.mode === "dev-link" ? delivery.verifyUrl : undefined
+      message: "This account already exists but is not verified yet. We sent a fresh verification code.",
+      email: existingUser.email,
+      expiresAt: verification.expiresAt.toISOString(),
+      devOtp: delivery.mode === "dev-otp" ? delivery.otp : undefined
     });
   }
 
@@ -82,15 +84,17 @@ export async function POST(request: Request) {
     }
   });
 
-  const token = await createEmailVerificationToken(user.id, user.email);
+  const verification = await createEmailVerificationOtp(user.id, user.email);
   const delivery = await sendVerificationEmail({
     email: user.email,
     fullName: user.fullName,
-    token
+    otp: verification.otp
   });
 
   return NextResponse.json({
-    message: "Account created. Check your email and verify your account before signing in.",
-    devVerificationUrl: delivery.mode === "dev-link" ? delivery.verifyUrl : undefined
+    message: "Account created. Check your email for the 6-digit verification code before signing in.",
+    email: user.email,
+    expiresAt: verification.expiresAt.toISOString(),
+    devOtp: delivery.mode === "dev-otp" ? delivery.otp : undefined
   }, { status: 201 });
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import type { Route } from "next";
+import Link from "next/link";
 import { type FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -71,6 +72,15 @@ export function LoginForm() {
       </div>
 
       {error ? <p className="mt-4 text-sm font-medium text-orange-700">{error}</p> : null}
+      {error.toLowerCase().includes("verify your email") ? (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Need a new code?{" "}
+          <Link className="text-primary underline" href={`/verify-email?email=${encodeURIComponent(email)}`}>
+            Verify your email
+          </Link>
+          .
+        </p>
+      ) : null}
 
       <div className="button-row">
         <Button disabled={isSubmitting} type="submit">

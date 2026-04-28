@@ -1,40 +1,24 @@
-import Link from "next/link";
-
-import { verifyEmailToken } from "@/lib/auth/email-verification";
+import { VerifyEmailForm } from "@/components/auth/verify-email-form";
 
 type VerifyEmailPageProps = {
   searchParams?: Promise<{
-    token?: string;
+    email?: string;
+    expiresAt?: string;
   }>;
 };
 
 export default async function VerifyEmailPage({ searchParams }: VerifyEmailPageProps) {
   const params = (await searchParams) ?? {};
-  const token = params.token?.trim();
-  const result = token ? await verifyEmailToken(token) : { ok: false as const, error: "Missing verification token." };
 
   return (
     <main className="shell page">
       <div className="page-header">
         <span className="eyebrow">Email verification</span>
-        <h1>{result.ok ? "Your email is verified." : "We could not verify this email."}</h1>
-        <p>
-          {result.ok
-            ? `The address ${result.email} is now active and can sign in with its app password.`
-            : result.error}
-        </p>
+        <h1>Verify your email with an OTP.</h1>
+        <p>Enter the 6-digit code sent to your email address. Codes expire after 10 minutes.</p>
       </div>
 
-      <div className="form-card max-w-[520px]">
-        <div className="button-row">
-          <Link className="button" href="/login">
-            Continue to login
-          </Link>
-          <Link className="button-secondary" href="/register">
-            Back to register
-          </Link>
-        </div>
-      </div>
+      <VerifyEmailForm initialEmail={params.email ?? ""} initialExpiresAt={params.expiresAt ?? ""} />
     </main>
   );
 }

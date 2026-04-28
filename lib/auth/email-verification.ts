@@ -1,17 +1,26 @@
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomInt } from "node:crypto";
 
 import { prisma } from "@/lib/db/prisma";
 
-const EMAIL_TOKEN_TTL_MS = 1000 * 60 * 60 * 24;
+const EMAIL_OTP_TTL_MS = 1000 * 60 * 10;
 
-function hashVerificationToken(token: string) {
-  return createHash("sha256").update(token).digest("hex");
+function normalizeEmail(email: string) {
+  return email.trim().toLowerCase();
 }
 
-export async function createEmailVerificationToken(userId: string, email: string) {
-  const token = randomBytes(32).toString("hex");
-  const tokenHash = hashVerificationToken(token);
-  const expiresAt = new Date(Date.now() + EMAIL_TOKEN_TTL_MS);
+function normalizeOtp(otp: string) {
+  return otp.replace(/\D/g, "");
+}
+
+function hashVerificationOtp(email: string, otp: string) {
+  return createHash("sha256").update(`${normalizeEmail(email)}:${normalizeOtp(otp)}`).digest("hex");
+}
+
+export async function createEmailVerificationOtp(userId: string, email: string) {
+  const normalizedEmail = normalizeEmail(email);
+  const otp = randomInt(100000, 1000000).toString();
+  const tokenHash = hashVerificationOtp(normalizedEmail, otp);
+  const expiresAt = new Date(Date.now() + EMAIL_OTP_TTL_MS);
 
   await prisma.verificationToken.deleteMany({
     where: {
@@ -23,17 +32,27 @@ export async function createEmailVerificationToken(userId: string, email: string
   await prisma.verificationToken.create({
     data: {
       userId,
-      email,
+      email: normalizedEmail,
       tokenHash,
       expiresAt
     }
   });
 
-  return token;
+  return {
+    otp,
+    expiresAt
+  };
 }
 
-export async function verifyEmailToken(token: string) {
-  const tokenHash = hashVerificationToken(token);
+export async function verifyEmailOtp(email: string, otp: string) {
+  const normalizedEmail = normalizeEmail(email);
+  const normalizedOtp = normalizeOtp(otp);
+
+  if (!normalizedEmail || !/^\d{6}$/.test(normalizedOtp)) {
+    return { ok: false as const, error: "Enter the 6-digit verification code." };
+  }
+
+  const tokenHash = hashVerificationOtp(normalizedEmail, normalizedOtp);
 
   const record = await prisma.verificationToken.findUnique({
     where: { tokenHash },
@@ -48,8 +67,14 @@ export async function verifyEmailToken(token: string) {
     }
   });
 
-  if (!record || record.consumedAt || record.expiresAt.getTime() < Date.now()) {
-    return { ok: false as const, error: "This verification link is invalid or has expired." };
+  if (
+    !record ||
+    record.consumedAt ||
+    record.expiresAt.getTime() < Date.now() ||
+    record.email !== normalizedEmail ||
+    record.user.email !== normalizedEmail
+  ) {
+    return { ok: false as const, error: "This verification code is invalid or has expired." };
   }
 
   await prisma.$transaction([
