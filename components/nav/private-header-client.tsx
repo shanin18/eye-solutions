@@ -1,6 +1,5 @@
 "use client";
 
-import type { Route } from "next";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
@@ -8,25 +7,24 @@ import { BrandMark } from "@/components/nav/brand-mark";
 import { LogoutButton } from "@/components/nav/logout-button";
 import { AppLink } from "@/components/navigation/navigation-progress";
 import type { SessionUser } from "@/lib/auth/session";
-import { getRoleRedirect } from "@/lib/auth/redirects";
 import { publicLinks } from "@/lib/navigation/public-links";
 import { cn } from "@/lib/utils";
 
-type PublicHeaderProps = {
+type PrivateHeaderClientProps = {
   user: SessionUser | null;
 };
 
-export function PublicHeader({ user }: PublicHeaderProps) {
+export function PrivateHeaderClient({ user }: PrivateHeaderClientProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border/70 bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-border/70 bg-background/80 backdrop-blur">
       <div className="shell flex items-center justify-between gap-4 py-4">
         <BrandMark />
 
-        <div className="hidden items-center gap-2 lg:flex">
+        <nav className="hidden items-center gap-2 lg:flex" aria-label="Public navigation">
           {publicLinks.map((link) => (
             <AppLink
               className={cn(
@@ -38,23 +36,16 @@ export function PublicHeader({ user }: PublicHeaderProps) {
               {link.label}
             </AppLink>
           ))}
+        </nav>
+
+        <div className="hidden items-center gap-4 lg:flex">
           {user ? (
-            <>
-              <AppLink className="button-secondary" href={getRoleRedirect(user.role)}>
-                Dashboard
-              </AppLink>
-              <LogoutButton />
-            </>
-          ) : (
-            <>
-              <AppLink className="button-secondary" href="/login">
-                Login
-              </AppLink>
-              <AppLink className="button" href="/register">
-                Register
-              </AppLink>
-            </>
-          )}
+            <div className="text-right">
+              <p className="text-sm font-semibold text-foreground">{user.fullName}</p>
+              <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">{user.role.replace("_", " ")}</p>
+            </div>
+          ) : null}
+          <LogoutButton />
         </div>
 
         <button
@@ -83,23 +74,16 @@ export function PublicHeader({ user }: PublicHeaderProps) {
                 {link.label}
               </AppLink>
             ))}
+
             {user ? (
-              <div className="grid gap-3 pt-2">
-                <AppLink className="button-secondary justify-center" href={getRoleRedirect(user.role)} onClick={closeMenu}>
-                  Dashboard
-                </AppLink>
+              <div className="grid gap-3 border-t border-border/80 pt-3">
+                <div className="px-1">
+                  <p className="text-sm font-semibold text-foreground">{user.fullName}</p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">{user.role.replace("_", " ")}</p>
+                </div>
                 <LogoutButton />
               </div>
-            ) : (
-              <div className="grid gap-3 pt-2">
-                <AppLink className="button-secondary justify-center" href="/login" onClick={closeMenu}>
-                  Login
-                </AppLink>
-                <AppLink className="button justify-center" href="/register" onClick={closeMenu}>
-                  Register
-                </AppLink>
-              </div>
-            )}
+            ) : null}
           </div>
         </div>
       ) : null}

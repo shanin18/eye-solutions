@@ -324,6 +324,53 @@
     @apply grid gap-2 border-primary/10 bg-white/90 p-4;
   }
 
+  .private-layout {
+    @apply grid gap-6 pt-8 lg:grid-cols-[280px_minmax(0,1fr)];
+    min-height: calc(100vh - 7rem);
+  }
+
+  .private-sidebar {
+    @apply lg:sticky lg:top-24 lg:self-start;
+  }
+
+  .private-main {
+    @apply min-w-0;
+  }
+
+  .private-sidebar-card {
+    @apply grid gap-5 rounded-[28px] border border-primary/10 bg-white/80 p-5 shadow-soft backdrop-blur;
+    min-height: calc(100vh - 8rem);
+    align-content: start;
+  }
+
+  .private-sidebar-identity {
+    @apply grid gap-4 border-b border-border/80 pb-5;
+  }
+
+  .private-sidebar-badge {
+    @apply inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary;
+  }
+
+  .private-sidebar-identity h2 {
+    @apply text-2xl font-black leading-tight;
+  }
+
+  .private-sidebar-identity p:not(.eyebrow) {
+    @apply text-sm leading-6 text-muted-foreground;
+  }
+
+  .private-sidebar-links {
+    @apply grid gap-2;
+  }
+
+  .private-sidebar-link {
+    @apply rounded-2xl px-4 py-3 text-sm font-semibold text-muted-foreground transition hover:bg-primary/10 hover:text-primary;
+  }
+
+  .private-sidebar-link-active {
+    @apply bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground;
+  }
+
   @media (max-width: 768px) {
     .hero-card h1 {
       @apply text-5xl;
@@ -331,6 +378,10 @@
 
     .page-header h1 {
       @apply text-3xl;
+    }
+
+    .private-layout {
+      @apply gap-4 pt-6;
     }
   }
 }

@@ -3,7 +3,7 @@ import { requireSessionUser } from "@/lib/auth/session";
 import { listAppointments, listDoctors, listPrescriptions, listProducts, listRestockRequests } from "@/lib/data/data-service";
 
 export default async function DoctorDashboardPage() {
-  const user = await requireSessionUser(["DOCTOR"]);
+  const user = await requireSessionUser(["DOCTOR", "SUPER_ADMIN"]);
   const doctors = await listDoctors();
   const doctorId = doctors.find((doctor) => doctor.name === user.fullName)?.id;
   const [appointments, prescriptions, products, restockRequests] = await Promise.all([

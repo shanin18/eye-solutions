@@ -1,52 +1,57 @@
 "use client";
 
-import type { Route } from "next";
 import { type FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
-
-import { useNavigationProgress } from "@/components/navigation/navigation-progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 type RegisterResponse = {
   message?: string;
   error?: string;
+  devVerificationUrl?: string;
 };
 
 export function RegisterForm() {
-  const router = useRouter();
-  const { startNavigation } = useNavigationProgress();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [devVerificationUrl, setDevVerificationUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
     setError("");
+    setMessage("");
+    setDevVerificationUrl("");
 
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ fullName, phone, email, password })
-    });
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ fullName, phone, email, password })
+      });
 
-    const data = (await response.json()) as RegisterResponse;
+      const data = (await response.json()) as RegisterResponse;
 
-    if (!response.ok) {
-      setError(data.error ?? "Unable to register.");
+      if (!response.ok) {
+        setError(data.error ?? "Unable to register.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      setMessage(data.message ?? "Account created. Check your email to verify it.");
+      setDevVerificationUrl(data.devVerificationUrl ?? "");
+      setPassword("");
       setIsSubmitting(false);
-      return;
+    } catch {
+      setError("Unable to register right now. Please try again.");
+      setIsSubmitting(false);
     }
-
-    startNavigation();
-    router.push("/patient/dashboard" as Route);
-    router.refresh();
   }
 
   return (
@@ -78,6 +83,15 @@ export function RegisterForm() {
       </div>
 
       {error ? <p className="mt-4 text-sm font-medium text-orange-700">{error}</p> : null}
+      {message ? <p className="mt-4 text-sm font-medium text-primary">{message}</p> : null}
+      {devVerificationUrl ? (
+        <p className="mt-2 text-sm text-muted-foreground">
+          SMTP is not configured yet, so your local verification link is available here:{" "}
+          <a className="text-primary underline" href={devVerificationUrl}>
+            verify this account
+          </a>
+        </p>
+      ) : null}
 
       <div className="button-row">
         <Button disabled={isSubmitting} type="submit">

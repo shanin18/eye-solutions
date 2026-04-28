@@ -3,7 +3,7 @@ import { requireSessionUser } from "@/lib/auth/session";
 import { getPatientOverview } from "@/lib/data/data-service";
 
 export default async function PatientDashboardPage() {
-  const user = await requireSessionUser(["PATIENT"]);
+  const user = await requireSessionUser(["PATIENT", "SUPER_ADMIN"]);
   const overview = await getPatientOverview(user.email);
 
   return (

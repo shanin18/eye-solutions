@@ -35,7 +35,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const user = await requireApiUser(["DOCTOR"]);
+  const user = await requireApiUser(["DOCTOR", "SUPER_ADMIN"]);
 
   if (user instanceof NextResponse) {
     return user;

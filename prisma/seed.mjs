@@ -80,14 +80,14 @@ async function main() {
   }
 
   const [superAdmin, admin, doctorUser1, doctorUser2, doctorUser3, receptionUser, opticalUser, patientUser] = await Promise.all([
-    upsertUser({ fullName: "Farhan Enterprise", email: "superadmin@eyeoptics.local", passwordHash: hashPassword("super123"), role: "SUPER_ADMIN", branchId: mainBranch.id, status: "ACTIVE" }),
-    upsertUser({ fullName: "Amina Siddiqua", email: "admin@eyeoptics.local", passwordHash: hashPassword("admin123"), role: "ADMIN", branchId: mainBranch.id, status: "ACTIVE" }),
-    upsertUser({ fullName: "Dr. Nadia Rahman", email: "doctor@eyeoptics.local", passwordHash: hashPassword("doctor123"), role: "DOCTOR", branchId: mainBranch.id, status: "ACTIVE" }),
-    upsertUser({ fullName: "Dr. Sameer Hasan", email: "sameer@eyeoptics.local", passwordHash: hashPassword("sameer123"), role: "DOCTOR", branchId: mainBranch.id, status: "ACTIVE" }),
-    upsertUser({ fullName: "Dr. Rafi Ahmed", email: "rafi@eyeoptics.local", passwordHash: hashPassword("rafi123"), role: "DOCTOR", branchId: mainBranch.id, status: "ACTIVE" }),
-    upsertUser({ fullName: "Nusrat Jahan", email: "reception@eyeoptics.local", passwordHash: hashPassword("reception123"), role: "RECEPTIONIST", branchId: mainBranch.id, status: "ACTIVE" }),
-    upsertUser({ fullName: "Shuvo Das", email: "optical@eyeoptics.local", passwordHash: hashPassword("optical123"), role: "OPTICAL_STAFF", branchId: mainBranch.id, status: "ACTIVE" }),
-    upsertUser({ fullName: "Sadia Karim", email: "patient@eyeoptics.local", passwordHash: hashPassword("patient123"), role: "PATIENT", status: "ACTIVE" })
+    upsertUser({ fullName: "Farhan Enterprise", email: "superadmin@eyeoptics.local", passwordHash: hashPassword("super123"), isEmailVerified: true, emailVerifiedAt: new Date(), role: "SUPER_ADMIN", branchId: mainBranch.id, status: "ACTIVE" }),
+    upsertUser({ fullName: "Amina Siddiqua", email: "admin@eyeoptics.local", passwordHash: hashPassword("admin123"), isEmailVerified: true, emailVerifiedAt: new Date(), role: "ADMIN", branchId: mainBranch.id, status: "ACTIVE" }),
+    upsertUser({ fullName: "Dr. Nadia Rahman", email: "doctor@eyeoptics.local", passwordHash: hashPassword("doctor123"), isEmailVerified: true, emailVerifiedAt: new Date(), role: "DOCTOR", branchId: mainBranch.id, status: "ACTIVE" }),
+    upsertUser({ fullName: "Dr. Sameer Hasan", email: "sameer@eyeoptics.local", passwordHash: hashPassword("sameer123"), isEmailVerified: true, emailVerifiedAt: new Date(), role: "DOCTOR", branchId: mainBranch.id, status: "ACTIVE" }),
+    upsertUser({ fullName: "Dr. Rafi Ahmed", email: "rafi@eyeoptics.local", passwordHash: hashPassword("rafi123"), isEmailVerified: true, emailVerifiedAt: new Date(), role: "DOCTOR", branchId: mainBranch.id, status: "ACTIVE" }),
+    upsertUser({ fullName: "Nusrat Jahan", email: "reception@eyeoptics.local", passwordHash: hashPassword("reception123"), isEmailVerified: true, emailVerifiedAt: new Date(), role: "RECEPTIONIST", branchId: mainBranch.id, status: "ACTIVE" }),
+    upsertUser({ fullName: "Shuvo Das", email: "optical@eyeoptics.local", passwordHash: hashPassword("optical123"), isEmailVerified: true, emailVerifiedAt: new Date(), role: "OPTICAL_STAFF", branchId: mainBranch.id, status: "ACTIVE" }),
+    upsertUser({ fullName: "Sadia Karim", email: "patient@eyeoptics.local", passwordHash: hashPassword("patient123"), isEmailVerified: true, emailVerifiedAt: new Date(), role: "PATIENT", status: "ACTIVE" })
   ]);
 
   const doctor1 = await prisma.doctorProfile.upsert({

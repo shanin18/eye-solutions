@@ -1,14 +1,24 @@
-import { LoginForm } from "@/components/auth/login-form";
+import { redirect } from "next/navigation";
 
-export default function LoginPage() {
+import { LoginForm } from "@/components/auth/login-form";
+import { getRoleRedirect } from "@/lib/auth/redirects";
+import { getSessionUser } from "@/lib/auth/session";
+
+export default async function LoginPage() {
+  const user = await getSessionUser();
+
+  if (user) {
+    redirect(getRoleRedirect(user.role));
+  }
+
   return (
     <main className="shell page">
       <div className="page-header">
         <span className="eyebrow">Authentication</span>
-        <h1>Patients and staff will share one secure sign-in boundary.</h1>
+        <h1>Sign in to continue with your live patient, clinic, or optical workspace.</h1>
         <p>
-          The UI is ready for role-aware auth wiring. In later steps we will connect this to sessions, hashed passwords,
-          and route protection.
+          Your account is checked against the live database, your password stays hashed, and verified email ownership
+          unlocks the right workspace after sign-in.
         </p>
       </div>
 

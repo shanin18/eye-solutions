@@ -24,12 +24,17 @@ export async function POST(request: Request) {
       email: true,
       role: true,
       passwordHash: true,
+      isEmailVerified: true,
       status: true
     }
   });
 
   if (!user || user.status !== "ACTIVE" || !verifyPassword(body.password, user.passwordHash)) {
     return NextResponse.json({ error: "Invalid credentials." }, { status: 401 });
+  }
+
+  if (!user.isEmailVerified) {
+    return NextResponse.json({ error: "Verify your email before signing in." }, { status: 403 });
   }
 
   await createSessionCookie({

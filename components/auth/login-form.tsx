@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useNavigationProgress } from "@/components/navigation/navigation-progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { roleRedirectMap } from "@/lib/auth/redirects";
 
 type SessionResponse = {
   message?: string;
@@ -16,20 +17,11 @@ type SessionResponse = {
   };
 };
 
-const roleRedirectMap: Record<NonNullable<SessionResponse["user"]>["role"], Route> = {
-  SUPER_ADMIN: "/admin",
-  ADMIN: "/admin",
-  DOCTOR: "/doctor",
-  RECEPTIONIST: "/reception",
-  OPTICAL_STAFF: "/optical",
-  PATIENT: "/patient/dashboard"
-};
-
 export function LoginForm() {
   const router = useRouter();
   const { startNavigation } = useNavigationProgress();
-  const [email, setEmail] = useState("patient@eyeoptics.local");
-  const [password, setPassword] = useState("patient123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,25 +30,30 @@ export function LoginForm() {
     setIsSubmitting(true);
     setError("");
 
-    const response = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email, password })
-    });
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
 
-    const data = (await response.json()) as SessionResponse;
+      const data = (await response.json()) as SessionResponse;
 
-    if (!response.ok || !data.user) {
-      setError(data.error ?? "Unable to sign in.");
+      if (!response.ok || !data.user) {
+        setError(data.error ?? "Unable to sign in.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      startNavigation();
+      router.push(roleRedirectMap[data.user.role] as Route);
+      router.refresh();
+    } catch {
+      setError("Unable to sign in right now. Please try again.");
       setIsSubmitting(false);
-      return;
     }
-
-    startNavigation();
-    router.push(roleRedirectMap[data.user.role]);
-    router.refresh();
   }
 
   return (
@@ -82,13 +79,14 @@ export function LoginForm() {
       </div>
 
       <div className="mt-4 space-y-1 text-sm text-muted-foreground">
-        <p>Demo accounts for this phase:</p>
+        <p>Local development starter accounts:</p>
         <p><code>superadmin@eyeoptics.local / super123</code></p>
         <p><code>reception@eyeoptics.local / reception123</code></p>
         <p><code>optical@eyeoptics.local / optical123</code></p>
         <p><code>patient@eyeoptics.local / patient123</code></p>
         <p><code>doctor@eyeoptics.local / doctor123</code></p>
         <p><code>admin@eyeoptics.local / admin123</code></p>
+        <p className="pt-2">New signups must verify their email before they can log in.</p>
       </div>
     </form>
   );
